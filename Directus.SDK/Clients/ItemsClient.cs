@@ -18,6 +18,22 @@ namespace Directus.SDK.Clients
         {
         }
 
+        public async Task<List<T>> GetItemsAsync<T>(string collection, DirectusQueryBuilder queryBuilder = null)
+        {
+            var requestUrl = $"items/{collection}";
+
+            if (queryBuilder != null)
+            {
+                requestUrl += "?" + queryBuilder.Build();
+            }
+
+            var response = await GetAsync(requestUrl);
+            response.EnsureSuccessStatusCode();
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var items = JsonConvert.DeserializeObject<DirectusResponse<List<T>>>(jsonResponse);
+            return items.Data;
+        }
+
         public async Task<List<T>> GetItemsAsync<T>(string collection)
         {
             var response = await GetAsync($"items/{collection}");
@@ -34,21 +50,6 @@ namespace Directus.SDK.Clients
             var jsonResponse = await response.Content.ReadAsStringAsync();
             var item = JsonConvert.DeserializeObject<DirectusResponse<T>>(jsonResponse);
             return item.Data;
-        }
-        public async Task<List<T>> GetItemsAsync<T>(string collection, DirectusQueryBuilder queryBuilder = null)
-        {
-            var requestUrl = $"items/{collection}";
-
-            if (queryBuilder != null)
-            {
-                requestUrl += "?" + queryBuilder.Build();
-            }
-
-            var response = await GetAsync(requestUrl);
-            response.EnsureSuccessStatusCode();
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var items = JsonConvert.DeserializeObject<DirectusResponse<List<T>>>(jsonResponse);
-            return items.Data;
         }
 
         public async Task<T> CreateItemAsync<T>(string collection, T item)

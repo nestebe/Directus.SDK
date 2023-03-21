@@ -1,3 +1,5 @@
 /Directus.SDK/obj/*
 /Directus.SDK/bin/*
 /.vs/*
+/DIrectus.SDK.Tests/bin/*
+/DIrectus.SDK.Tests/obj/*

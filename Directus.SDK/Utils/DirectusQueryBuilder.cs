@@ -1,72 +1,63 @@
-﻿using System;
+﻿using Directus.SDK.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Directus.SDK.Utils
 {
     public class DirectusQueryBuilder
     {
-        private readonly Dictionary<string, string> _queryParameters = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _parameters;
 
-        public DirectusQueryBuilder Fields(params string[] fields)
+        public DirectusQueryBuilder()
         {
-            _queryParameters["fields"] = string.Join(",", fields);
+            _parameters = new Dictionary<string, string>();
+        }
+
+        public DirectusQueryBuilder AddParameter(string key, string value)
+        {
+            _parameters[key] = value;
             return this;
+        }
+
+        public DirectusQueryBuilder Filter(string field, string operation, string value)
+        {
+            return AddParameter($"filter[{field}][{operation}]", value);
         }
 
         public DirectusQueryBuilder Limit(int limit)
         {
-            _queryParameters["limit"] = limit.ToString();
-            return this;
+            return AddParameter("limit", limit.ToString());
         }
 
         public DirectusQueryBuilder Offset(int offset)
         {
-            _queryParameters["offset"] = offset.ToString();
-            return this;
+            return AddParameter("offset", offset.ToString());
         }
 
-        public DirectusQueryBuilder Sort(params string[] sortFields)
+        public DirectusQueryBuilder Search(string search)
         {
-            _queryParameters["sort"] = string.Join(",", sortFields);
-            return this;
+            return AddParameter("search", search);
         }
 
-        public DirectusQueryBuilder Filter(string filterKey, string filterValue, string? operation = "")
+        public DirectusQueryBuilder Sort(string sort)
         {
-            if (string.IsNullOrEmpty(operation))
-            {
-                _queryParameters[$"filter[{filterKey}]"] = filterValue;
-            }
-            else
-            {
-                _queryParameters[$"filter[{filterKey}][{operation}]"] = filterValue;
-            }
-
-            return this;
+            return AddParameter("sort", sort);
         }
 
-
-        public DirectusQueryBuilder Search(string searchQuery)
+        public DirectusQueryBuilder CustomFilter(Filter filter)
         {
-            _queryParameters["search"] = searchQuery;
+            AddParameter("filter", JsonConvert.SerializeObject(filter.Value));
             return this;
         }
-
-        // Ajoutez d'autres méthodes pour les paramètres de requête pris en charge
 
         public string Build()
         {
-            if (_queryParameters.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            var queryString = new StringBuilder("?");
-            queryString.AppendJoin("&", _queryParameters.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-            return queryString.ToString();
+            return string.Join("&", _parameters.Select(kv => $"{kv.Key}={kv.Value}"));
         }
     }
 }
