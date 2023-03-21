@@ -48,7 +48,7 @@ var password = "password";
 
 //Authentification
 var authenticator = new DirectusAuthenticator(apiUrl);
-var tokenProvider = new TokenProvider(authenticator, email, password);
+var tokenProvider = new authenticator.TokenProvider(email, password);
 var directusSDK = new DirectusSDK(apiUrl, tokenProvider);
 ```
 
@@ -57,49 +57,39 @@ You can then use the `directusSDKinstance to interact with the various Directus 
 Here is an example of using the Directus SDK library to retrieve all items in a collection:
 
 ```c#
-    public class Blog
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-    }
+using Newtonsoft.Json;   
+public class Blog
+{ 
+    [JsonProperty("id")]
+    public int Id { get; set; }
+    [JsonProperty("title")]
+    public string Title { get; set; }
+    [JsonProperty("content")]
+    public string Content { get; set; }
+ }
 
-	// Get Items
-    var items = await directusSdk.Items.GetItemsAsync<Blog>("Blog");
+//Create new item
+var item = new Blog() { Content= "content_test", Title="title_test" };
+var itemCreated = await directusSDK.Items.CreateItemAsync<Blog>("Blog", item);
 
-    foreach (var item in items)
-    {
-        Console.WriteLine($"{item.Title}");
-    }
+//Update Item
+var itemToUpdate = await directusSDK.Items.GetItemAsync<Blog>("Blog", "item_id");
+itemToUpdate.Title = "title_test_2";
 
-	//Get Item
-    var item = await directusSdk.Items.GetItemAsync<Blog>("Blog","item_id");
+var item = await directusSDK.Items.UpdateItemAsync<Blog>("Blog", "item_id", itemToUpdate);
 
-	//Create new item
-    var newPost = await directusSdk.Items.CreateItemAsync<Blog>("Blog", new Blog { Title = "Hello", Content="paragraph"});
-	
-	//Update Item
-  	 var blogUpdated = await itemsClient.UpdateItemAsync<Blog>("Blog", "item_id", item);
+//Delete Item
+var isDeleted = await directusSDK.Items.DeleteItemAsync("Blog", "item_id");
 
-	//Delete Item
- 	var itemIsDeleted = await itemsClient.DeleteItemAsync("Blog", "item_id");
+//Custom queries
+DirectusQueryBuilder queryBuilder = new DirectusQueryBuilder();
+var customFilter = new OrFilter(new EqFilter("content", "content_test_2"), new EqFilter("title", "title_test_3"));
+queryBuilder.CustomFilter(customFilter);
 
-
-	//Use Queries
-    var queryBuilder = new DirectusQueryBuilder()
-    .Fields("id", "title")
-    .Limit(10)
-    .Offset(0)
-    .Sort("title")
-    .Filter("title", "hello", "_contains");
-
-    var items =  await directusSdk.Items.GetItemsAsync<Blog>("Blog", queryBuilder);
-
+var items = await directusSDK.Items.GetItemsAsync<Blog>("Blog", queryBuilder);
 
 
 ```
-
-In this example, we used the `itemsClient` to retrieve all items in the "collection_name" collection. We specified the `DirectusItem` type as the generic type for the `GetAllAsync` method, which means that each item will be deserialized into an instance of the `DirectusItem` class.
 
 ## Contribution
 
