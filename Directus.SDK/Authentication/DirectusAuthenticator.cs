@@ -40,6 +40,13 @@ namespace Directus.SDK.Authentication
             }
         }
 
+        public async Task<TokenProvider> AuthenticateAsync(string staticToken)
+        {
+            var token = new TokenProvider();
+            token.SetAccessToken(staticToken);
+            return token;
+        }
+
         public void Dispose()
         {
             _httpClient.Dispose();
