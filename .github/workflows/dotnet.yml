@@ -29,6 +29,8 @@ jobs:
         run: dotnet pack Directus.SDK/Directus.SDK.csproj --no-build -c Release -o ./nupkg
 
       - name: Publish to NuGet
+        env:
+            NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: 
-          echo ${{ prod.secrets.NUGET_API_KEY }}
-          dotnet nuget push "./nupkg/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json"
+          echo ${{ NUGET_API_KEY }}
+          dotnet nuget push "./nupkg/*.nupkg" -k ${{ NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json"
