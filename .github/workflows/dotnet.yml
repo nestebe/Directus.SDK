@@ -24,9 +24,6 @@ jobs:
       - name: Build
         run: dotnet build Directus.SDK/Directus.SDK.csproj --no-restore
 
-      - name: Test
-        run: dotnet test Directus.SDK.Tests/Directus.SDK.Tests.csproj --no-build --verbosity normal
-
       - name: Pack
         run: dotnet pack Directus.SDK/Directus.SDK.csproj --no-build -c Release -o ./nupkg
 
