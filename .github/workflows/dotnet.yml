@@ -1,5 +1,6 @@
 name: .NET
-
+env:
+  NAME: 'prod'
 on:
   push:
     branches: [ "main" ]
