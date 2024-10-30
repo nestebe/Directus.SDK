@@ -32,5 +32,4 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: 
-          echo $NUGET_API_KEY
           dotnet nuget push "./nupkg/*.nupkg" -k $NUGET_API_KEY --source "https://api.nuget.org/v3/index.json"
