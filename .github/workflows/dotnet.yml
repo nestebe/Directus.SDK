@@ -22,7 +22,7 @@ jobs:
         run: dotnet restore Directus.SDK/Directus.SDK.csproj
 
       - name: Build
-        run: dotnet build Directus.SDK/Directus.SDK.csproj --no-restore
+        run: dotnet build Directus.SDK/Directus.SDK.csproj --no-restore -c Release
 
       - name: Pack
         run: dotnet pack Directus.SDK/Directus.SDK.csproj --no-build -c Release -o ./nupkg
